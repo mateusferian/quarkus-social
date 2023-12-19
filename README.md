@@ -1,60 +1,71 @@
-# quarkus-social
+# Quarkus Social
+A system designed to create users, establish connections, responsibly send messages, and incorporate various additional features.
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+### prerequisites
 
-If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
+what do you need to run the project?
+* [Maven](https://gradle.org/)
+* [MySQL](https://www.mysql.com/)
+* [quarkus]( https://quarkus.io/)
+* [JDK-17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
+* [Docker Compose](https://docs.docker.com/compose/)
 
-## Running the application in dev mode
-
-You can run your application in dev mode that enables live coding using:
-```shell script
-./mvnw compile quarkus:dev
+### how can we download the application?
+#### SSH
+```
+git@github.com:mateusferian/quarkus-social.git
+```
+#### HTTPs
+```
+https://github.com/mateusferian/quarkus-social.git
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
+### code versioning best practices
+* Using Gitflow
+* Using semantic commit
 
-## Packaging and running the application
-
-The application can be packaged using:
-```shell script
-./mvnw package
+## How to run the application in production?
 ```
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
-
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
-
-If you want to build an _über-jar_, execute the following command:
-```shell script
-./mvnw package -Dquarkus.package.type=uber-jar
+java -jar ./target/quarkus-app/quarkus-run.jar
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+### how to run application with docker?
 
-## Creating a native executable
-
-You can create a native executable using: 
-```shell script
-./mvnw package -Dnative
+To run the application with Docker, run the following command in the terminal:
+```
+docker run -i -p 8080:8080 --name quarkus-social-container quarkus-social:1.1
 ```
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using: 
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
+## How to stop the application?
+```
+docker stop quarkus-social-container
 ```
 
-You can then execute your native executable with: `./target/quarkus-social-1.0-runner`
+## How to stop the application?
+```
+docker start quarkus-social-container
+```
 
-If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.
+### how to run unit tests?
+open the terminal and run the command below:
 
-## Related Guides
+```
+./mvnw test
+```
 
-- RESTEasy Classic ([guide](https://quarkus.io/guides/resteasy)): REST endpoint framework implementing Jakarta REST and more
+### to access API documentation
+Open your browser and go to the following link:
 
-## Provided Code
+```
+http://localhost:8080/q/swagger-ui/
+```
 
-### RESTEasy JAX-RS
+### technologies used
 
-Easily start your RESTful Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started#the-jax-rs-resources)
+* [Maven](https://gradle.org/) - Maven is a powerful build automation tool that streamlines dependency management and the compilation process in 
+* Java projects, promoting standardization and development organization..
+####
+* [quarkus]( https://quarkus.io/) - Quarkus redefines Java development for the cloud-native era, providing an efficient, f
+* ast, and lightweight experience, specifically designed for building microservices and cloud-native applications with maximum efficiency.
+####
+* [Swagger](https://swagger.io/) - Simplify API development for users, teams, and enterprises with the open source, professional Swagger toolset.
