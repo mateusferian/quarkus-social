@@ -1,4 +1,4 @@
-package io.github.mateusferian.quarkussocial.domain.model;
+package io.github.mateusferian.quarkussocial.domains.models;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
@@ -13,7 +13,7 @@ import java.util.Objects;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class User extends PanacheEntityBase {
+public class UserModel extends PanacheEntityBase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,7 +28,7 @@ public class User extends PanacheEntityBase {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
+        UserModel user = (UserModel) o;
         return Objects.equals(id, user.id) && Objects.equals(name, user.name) && Objects.equals(age, user.age);
     }
 

@@ -1,4 +1,4 @@
-package io.github.mateusferian.quarkussocial.domain.model;
+package io.github.mateusferian.quarkussocial.domains.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Post {
+public class PostModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +26,7 @@ public class Post {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private UserModel user;
 
     @PrePersist
     public void prePersist(){

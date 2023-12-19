@@ -1,7 +1,7 @@
-package io.github.mateusferian.quarkussocial.rest;
+package io.github.mateusferian.quarkussocial.rests;
 
-import io.github.mateusferian.quarkussocial.rest.dto.ResponseError;
-import io.github.mateusferian.quarkussocial.rest.dto.UserRequest;
+import io.github.mateusferian.quarkussocial.rests.dtos.errors.ResponseError;
+import io.github.mateusferian.quarkussocial.rests.dtos.requests.UserRequestDTO;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.*;
@@ -23,7 +23,7 @@ class UserResourceTest {
     @DisplayName("Should create a user successfully")
     @Order(1)
     public void saveTest() {
-        UserRequest user = new UserRequest();
+        UserRequestDTO user = new UserRequestDTO();
         user.setName("testAPI");
         user.setAge(19);
 
@@ -45,7 +45,7 @@ class UserResourceTest {
     @Order(2)
     public void saveUserValidationErrorTest(){
 
-        UserRequest user = new UserRequest();
+        UserRequestDTO user = new UserRequestDTO();
         user.setName(null);
         user.setAge(0);
 

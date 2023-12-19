@@ -1,9 +1,9 @@
-package io.github.mateusferian.quarkussocial.rest;
+package io.github.mateusferian.quarkussocial.rests;
 
-import io.github.mateusferian.quarkussocial.domain.model.User;
-import io.github.mateusferian.quarkussocial.domain.repository.UserRepository;
-import io.github.mateusferian.quarkussocial.rest.dto.ResponseError;
-import io.github.mateusferian.quarkussocial.rest.dto.UserRequest;
+import io.github.mateusferian.quarkussocial.domains.models.UserModel;
+import io.github.mateusferian.quarkussocial.domains.repositories.UserRepository;
+import io.github.mateusferian.quarkussocial.rests.dtos.errors.ResponseError;
+import io.github.mateusferian.quarkussocial.rests.dtos.requests.UserRequestDTO;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -32,15 +32,15 @@ public class UserResource {
 
     @POST
     @Transactional
-    public Response save(UserRequest userRequest){
+    public Response save(UserRequestDTO userRequest){
 
-        Set<ConstraintViolation<UserRequest>> violations = validator.validate(userRequest);
+        Set<ConstraintViolation<UserRequestDTO>> violations = validator.validate(userRequest);
         if(!violations.isEmpty()){
             return ResponseError.createFromValidation(violations).withStatusCode(ResponseError.UNPROCESSABLE_ENTITY_STATUS);
 
         }
 
-        User user = new User();
+        UserModel user = new UserModel();
         user.setAge(userRequest.getAge());
         user.setName(userRequest.getName());
 
@@ -54,7 +54,7 @@ public class UserResource {
 
     @GET
     public Response findAll(){
-        PanacheQuery<User> query = userRepository.findAll();
+        PanacheQuery<UserModel> query = userRepository.findAll();
         return Response.ok(query.list()).build();
     }
 
@@ -62,7 +62,7 @@ public class UserResource {
     @Path("{id}")
     @Transactional
     public Response delete(@PathParam("id") Long id) {
-        User user = userRepository.findById(id);
+        UserModel user = userRepository.findById(id);
         if(user != null){
             userRepository.delete(user);
             return Response.noContent().build();
@@ -74,9 +74,9 @@ public class UserResource {
     @PUT
     @Path("{id}")
     @Transactional
-    public Response update(@PathParam("id") Long id, UserRequest userRequest) {
+    public Response update(@PathParam("id") Long id, UserRequestDTO userRequest) {
 
-        User user = userRepository.findById(id);
+        UserModel user = userRepository.findById(id);
 
         if(user != null){
             user.setName(userRequest.getName());

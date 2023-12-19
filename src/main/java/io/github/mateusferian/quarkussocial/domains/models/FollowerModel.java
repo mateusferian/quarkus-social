@@ -1,4 +1,4 @@
-package io.github.mateusferian.quarkussocial.domain.model;
+package io.github.mateusferian.quarkussocial.domains.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -6,7 +6,7 @@ import lombok.Data;
 @Entity
 @Table(name = "tbl_follower")
 @Data
-public class Follower {
+public class FollowerModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,9 +14,9 @@ public class Follower {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private UserModel user;
 
     @ManyToOne
     @JoinColumn(name = "id_follower")
-    private User follower;
+    private UserModel follower;
 }

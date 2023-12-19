@@ -1,12 +1,12 @@
-package io.github.mateusferian.quarkussocial.rest;
+package io.github.mateusferian.quarkussocial.rests;
 
-import io.github.mateusferian.quarkussocial.domain.model.Follower;
-import io.github.mateusferian.quarkussocial.domain.model.Post;
-import io.github.mateusferian.quarkussocial.domain.model.User;
-import io.github.mateusferian.quarkussocial.domain.repository.FollowerRepository;
-import io.github.mateusferian.quarkussocial.domain.repository.PostRepository;
-import io.github.mateusferian.quarkussocial.domain.repository.UserRepository;
-import io.github.mateusferian.quarkussocial.rest.dto.PostRequest;
+import io.github.mateusferian.quarkussocial.domains.models.FollowerModel;
+import io.github.mateusferian.quarkussocial.domains.models.PostModel;
+import io.github.mateusferian.quarkussocial.domains.models.UserModel;
+import io.github.mateusferian.quarkussocial.domains.repositories.FollowerRepository;
+import io.github.mateusferian.quarkussocial.domains.repositories.PostRepository;
+import io.github.mateusferian.quarkussocial.domains.repositories.UserRepository;
+import io.github.mateusferian.quarkussocial.rests.dtos.requests.PostRequestDTO;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
@@ -45,30 +45,30 @@ class PostResourceTest {
     @BeforeEach
     @Transactional
     public void setUP(){
-        User user = new User();
+        UserModel user = new UserModel();
         user.setName("testAPI");
         user.setAge(19);
         userRepository.persist(user);
         USER_ID = user.getId();
 
-        User userNotFollower = new User();
+        UserModel userNotFollower = new UserModel();
         userNotFollower.setName("testFollowerNot");
         userNotFollower.setAge(19);
         userRepository.persist(userNotFollower);
         USER_ID_NOT_FOLLOWER = userNotFollower.getId();
 
-        User userFollower = new User();
+        UserModel userFollower = new UserModel();
         userFollower.setName("testFollower");
         userFollower.setAge(19);
         userRepository.persist(userFollower);
         USER_ID_FOLLOWER = userFollower.getId();
 
-        Follower follower = new Follower();
+        FollowerModel follower = new FollowerModel();
         follower.setUser(user);
         follower.setFollower(userFollower);
         followerRepository.persist(follower);
 
-        Post post = new Post();
+        PostModel post = new PostModel();
         post.setText("hello");
         post.setUser(user);
         postRepository.persist(post);
@@ -77,7 +77,7 @@ class PostResourceTest {
     @Test
     @DisplayName("Should create a post successfully")
     public void savePostTest() {
-        PostRequest postRequest = new PostRequest();
+        PostRequestDTO postRequest = new PostRequestDTO();
         postRequest.setText("Some text");
 
         given()
@@ -93,7 +93,7 @@ class PostResourceTest {
     @Test
     @DisplayName("Should return 404 when trying to make a post for an nonexistent user")
     public void postPostUserNotFoundTest() {
-        PostRequest postRequest = new PostRequest();
+        PostRequestDTO postRequest = new PostRequestDTO();
         postRequest.setText("Some text");
 
         given()

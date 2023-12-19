@@ -1,10 +1,10 @@
-package io.github.mateusferian.quarkussocial.rest;
+package io.github.mateusferian.quarkussocial.rests;
 
-import io.github.mateusferian.quarkussocial.domain.model.Follower;
-import io.github.mateusferian.quarkussocial.domain.model.User;
-import io.github.mateusferian.quarkussocial.domain.repository.FollowerRepository;
-import io.github.mateusferian.quarkussocial.domain.repository.UserRepository;
-import io.github.mateusferian.quarkussocial.rest.dto.FollowerRequest;
+import io.github.mateusferian.quarkussocial.domains.models.FollowerModel;
+import io.github.mateusferian.quarkussocial.domains.models.UserModel;
+import io.github.mateusferian.quarkussocial.domains.repositories.FollowerRepository;
+import io.github.mateusferian.quarkussocial.domains.repositories.UserRepository;
+import io.github.mateusferian.quarkussocial.rests.dtos.requests.FollowerRequestDTO;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
@@ -36,19 +36,19 @@ class FollowerResourceTest {
     @BeforeEach
     @Transactional
     public void setUp(){
-        User user = new User();
+        UserModel user = new UserModel();
         user.setName("testAPI");
         user.setAge(19);
         userRepository.persist(user);
         USER_ID = user.getId();
 
-        User userFollower = new User();
+        UserModel userFollower = new UserModel();
         userFollower.setName("testFollower");
         userFollower.setAge(19);
         userRepository.persist(userFollower);
         USER_ID_FOLLOWER = userFollower.getId();
 
-        Follower follower = new Follower();
+        FollowerModel follower = new FollowerModel();
         follower.setUser(user);
         follower.setFollower(userFollower);
         followerRepository.persist(follower);
@@ -58,7 +58,7 @@ class FollowerResourceTest {
     @DisplayName("Should return 409 when followerId is equal to user id")
     public void someUserAsFollowerTest(){
 
-        FollowerRequest followerRequest = new FollowerRequest();
+        FollowerRequestDTO followerRequest = new FollowerRequestDTO();
         followerRequest.setIdFollower(USER_ID);
 
         given()
@@ -76,7 +76,7 @@ class FollowerResourceTest {
     @DisplayName("Should return 404 on follower a user when user id doesn't exist")
     public void userNotFoundWhenTryingToFollowerTest(){
 
-        FollowerRequest followerRequest = new FollowerRequest();
+        FollowerRequestDTO followerRequest = new FollowerRequestDTO();
         followerRequest.setIdFollower(USER_ID);
 
         given()
@@ -93,7 +93,7 @@ class FollowerResourceTest {
     @DisplayName("Should follow a user")
     public void followerUserTest(){
 
-        FollowerRequest followerRequest = new FollowerRequest();
+        FollowerRequestDTO followerRequest = new FollowerRequestDTO();
         followerRequest.setIdFollower(USER_ID_FOLLOWER);
 
         given()
