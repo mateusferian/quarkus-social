@@ -62,7 +62,7 @@ public class FollowerResource {
     }
 
     @GET
-    public Response listFollowers(@PathParam("userId") Long userId){
+    public Response findAll(@PathParam("userId") Long userId){
 
         var user = userRepository.findById(userId);
 
@@ -86,7 +86,7 @@ public class FollowerResource {
 
     @DELETE
     @Transactional
-    public Response unFollowUser(
+    public Response delete(
             @PathParam("userId") Long userId,
             @QueryParam("followerId") Long followerId){
         var user = userRepository.findById(userId);
