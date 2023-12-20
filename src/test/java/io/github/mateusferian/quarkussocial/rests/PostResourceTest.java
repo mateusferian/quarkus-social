@@ -50,6 +50,7 @@ class PostResourceTest {
     @BeforeEach
     @Transactional
     public void setUP(){
+
         UserModel user = new UserModel();
         user.setName("testAPI");
         user.setAge(19);

@@ -66,7 +66,6 @@ class UserResourceTest {
 
         assertNotNull(errors.get(0).get("message"));
         assertNotNull(errors.get(1).get("message"));
-
     }
 
     @Test
