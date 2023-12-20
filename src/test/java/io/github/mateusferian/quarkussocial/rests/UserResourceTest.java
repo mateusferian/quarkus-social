@@ -1,9 +1,10 @@
-package io.github.mateusferian.quarkussocial.rest;
+package io.github.mateusferian.quarkussocial.rests;
 
-import io.github.mateusferian.quarkussocial.rest.dto.ResponseError;
-import io.github.mateusferian.quarkussocial.rest.dto.UserRequest;
+import io.github.mateusferian.quarkussocial.rests.dtos.errors.ResponseError;
+import io.github.mateusferian.quarkussocial.rests.dtos.requests.UserRequestDTO;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
+import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.*;
 
 import java.util.List;
@@ -23,7 +24,7 @@ class UserResourceTest {
     @DisplayName("Should create a user successfully")
     @Order(1)
     public void saveTest() {
-        UserRequest user = new UserRequest();
+        UserRequestDTO user = new UserRequestDTO();
         user.setName("testAPI");
         user.setAge(19);
 
@@ -36,7 +37,7 @@ class UserResourceTest {
                 .log().all()
                 .extract().response();
 
-        assertEquals(201, response.statusCode());
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.statusCode());
         assertNotNull(response.jsonPath().getString("id"));
     }
 
@@ -45,7 +46,7 @@ class UserResourceTest {
     @Order(2)
     public void saveUserValidationErrorTest(){
 
-        UserRequest user = new UserRequest();
+        UserRequestDTO user = new UserRequestDTO();
         user.setName(null);
         user.setAge(0);
 
@@ -65,7 +66,6 @@ class UserResourceTest {
 
         assertNotNull(errors.get(0).get("message"));
         assertNotNull(errors.get(1).get("message"));
-
     }
 
     @Test
@@ -78,8 +78,6 @@ class UserResourceTest {
                 .when()
                 .get(URL_USERS)
                 .then()
-                .statusCode(200);
-//                .body("size()", Matchers.is(1));
-
+                .statusCode(Response.Status.OK.getStatusCode());
     }
 }

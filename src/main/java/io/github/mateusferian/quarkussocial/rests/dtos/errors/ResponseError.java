@@ -1,4 +1,4 @@
-package io.github.mateusferian.quarkussocial.rest.dto;
+package io.github.mateusferian.quarkussocial.rests.dtos.errors;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.ws.rs.core.Response;

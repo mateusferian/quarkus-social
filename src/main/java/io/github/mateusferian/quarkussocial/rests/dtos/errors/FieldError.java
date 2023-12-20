@@ -1,4 +1,4 @@
-package io.github.mateusferian.quarkussocial.rest.dto;
+package io.github.mateusferian.quarkussocial.rests.dtos.errors;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

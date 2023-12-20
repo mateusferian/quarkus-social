@@ -1,15 +1,16 @@
-package io.github.mateusferian.quarkussocial.rest;
+package io.github.mateusferian.quarkussocial.rests;
 
-import io.github.mateusferian.quarkussocial.domain.model.Follower;
-import io.github.mateusferian.quarkussocial.domain.model.User;
-import io.github.mateusferian.quarkussocial.domain.repository.FollowerRepository;
-import io.github.mateusferian.quarkussocial.domain.repository.UserRepository;
-import io.github.mateusferian.quarkussocial.rest.dto.FollowerRequest;
+import io.github.mateusferian.quarkussocial.domains.models.FollowerModel;
+import io.github.mateusferian.quarkussocial.domains.models.UserModel;
+import io.github.mateusferian.quarkussocial.domains.repositories.FollowerRepository;
+import io.github.mateusferian.quarkussocial.domains.repositories.UserRepository;
+import io.github.mateusferian.quarkussocial.rests.dtos.requests.FollowerRequestDTO;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.core.Response;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,22 +34,26 @@ class FollowerResourceTest {
 
     public static Long USER_ID_FOLLOWER;
 
+    public static String NAME_USER_ID_FOLLOWER_PARAMETER = "followerId";
+
+    public static String NAME_USER_ID_PARAMETER = "userId";
+
     @BeforeEach
     @Transactional
     public void setUp(){
-        User user = new User();
+        UserModel user = new UserModel();
         user.setName("testAPI");
         user.setAge(19);
         userRepository.persist(user);
         USER_ID = user.getId();
 
-        User userFollower = new User();
+        UserModel userFollower = new UserModel();
         userFollower.setName("testFollower");
         userFollower.setAge(19);
         userRepository.persist(userFollower);
         USER_ID_FOLLOWER = userFollower.getId();
 
-        Follower follower = new Follower();
+        FollowerModel follower = new FollowerModel();
         follower.setUser(user);
         follower.setFollower(userFollower);
         followerRepository.persist(follower);
@@ -58,17 +63,17 @@ class FollowerResourceTest {
     @DisplayName("Should return 409 when followerId is equal to user id")
     public void someUserAsFollowerTest(){
 
-        FollowerRequest followerRequest = new FollowerRequest();
+        FollowerRequestDTO followerRequest = new FollowerRequestDTO();
         followerRequest.setIdFollower(USER_ID);
 
         given()
                 .contentType(ContentType.JSON)
                 .body(followerRequest)
-                .pathParams("userid",USER_ID)
+                .pathParams(NAME_USER_ID_PARAMETER,USER_ID)
                 .when()
                 .put()
                 .then()
-                .statusCode(409)
+                .statusCode(Response.Status.CONFLICT.getStatusCode())
                 .body(Matchers.is("You can't follower yourself"));
     }
 
@@ -76,34 +81,34 @@ class FollowerResourceTest {
     @DisplayName("Should return 404 on follower a user when user id doesn't exist")
     public void userNotFoundWhenTryingToFollowerTest(){
 
-        FollowerRequest followerRequest = new FollowerRequest();
+        FollowerRequestDTO followerRequest = new FollowerRequestDTO();
         followerRequest.setIdFollower(USER_ID);
 
         given()
                 .contentType(ContentType.JSON)
                 .body(followerRequest)
-                .pathParams("userid",USER_ID_NONEXISTENT)
+                .pathParams(NAME_USER_ID_PARAMETER,USER_ID_NONEXISTENT)
                 .when()
                 .put()
                 .then()
-                .statusCode(404);
+                .statusCode(Response.Status.NOT_FOUND.getStatusCode());
     }
 
     @Test
     @DisplayName("Should follow a user")
     public void followerUserTest(){
 
-        FollowerRequest followerRequest = new FollowerRequest();
+        FollowerRequestDTO followerRequest = new FollowerRequestDTO();
         followerRequest.setIdFollower(USER_ID_FOLLOWER);
 
         given()
                 .contentType(ContentType.JSON)
                 .body(followerRequest)
-                .pathParams("userid",USER_ID)
+                .pathParams(NAME_USER_ID_PARAMETER,USER_ID)
                 .when()
                 .put()
                 .then()
-                .statusCode(204);
+                .statusCode(Response.Status.NO_CONTENT.getStatusCode());
     }
 
     @Test
@@ -112,11 +117,11 @@ class FollowerResourceTest {
 
         given()
                 .contentType(ContentType.JSON)
-                .pathParams("userid",USER_ID_NONEXISTENT)
+                .pathParams(NAME_USER_ID_PARAMETER,USER_ID_NONEXISTENT)
                 .when()
                 .get()
                 .then()
-                .statusCode(404);
+                .statusCode(Response.Status.NOT_FOUND.getStatusCode());
     }
 
     @Test
@@ -125,7 +130,7 @@ class FollowerResourceTest {
 
         var response = given()
                 .contentType(ContentType.JSON)
-                .pathParams("userid",USER_ID)
+                .pathParams(NAME_USER_ID_PARAMETER,USER_ID)
                 .when()
                 .get()
                 .then()
@@ -134,7 +139,7 @@ class FollowerResourceTest {
         var followersCount = response.jsonPath().get("followersCount");
         var followerListContent = response.jsonPath().getList("content");
 
-        assertEquals(200, response.statusCode());
+        assertEquals(Response.Status.OK.getStatusCode(), response.statusCode());
         assertEquals(followersCount, 1);
         assertEquals(1, followerListContent.size());
     }
@@ -144,12 +149,12 @@ class FollowerResourceTest {
     public void userNotFoundWhenUnFollowingAUserTest(){
 
         given()
-                .pathParams("userid",USER_ID_NONEXISTENT)
-                .queryParam("followerId",USER_ID_FOLLOWER)
+                .pathParams(NAME_USER_ID_PARAMETER,USER_ID_NONEXISTENT)
+                .queryParam(NAME_USER_ID_FOLLOWER_PARAMETER,USER_ID_FOLLOWER)
                 .when()
                 .delete()
                 .then()
-                .statusCode(404);
+                .statusCode(Response.Status.NOT_FOUND.getStatusCode());
     }
 
     @Test
@@ -157,11 +162,11 @@ class FollowerResourceTest {
     public void unfollowUserTest(){
 
         given()
-                .pathParams("userid",USER_ID)
-                .queryParam("followerId",USER_ID_FOLLOWER)
+                .pathParams(NAME_USER_ID_PARAMETER,USER_ID)
+                .queryParam(NAME_USER_ID_FOLLOWER_PARAMETER,USER_ID_FOLLOWER)
                 .when()
                 .delete()
                 .then()
-                .statusCode(204);
+                .statusCode(Response.Status.NO_CONTENT.getStatusCode());
     }
 }
