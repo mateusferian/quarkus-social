@@ -63,9 +63,9 @@ http://localhost:8080/q/swagger-ui/
 ### technologies used
 
 * [Maven](https://gradle.org/) - Maven is a powerful build automation tool that streamlines dependency management and the compilation process in 
-* Java projects, promoting standardization and development organization..
+Java projects, promoting standardization and development organization..
 ####
-* [quarkus]( https://quarkus.io/) - Quarkus redefines Java development for the cloud-native era, providing an efficient, f
-* ast, and lightweight experience, specifically designed for building microservices and cloud-native applications with maximum efficiency.
+* [quarkus]( https://quarkus.io/) - Quarkus redefines Java development for the cloud-native era, providing an efficient, fast, and lightweight experience,
+specifically designed for building microservices and cloud-native applications with maximum efficiency.
 ####
 * [Swagger](https://swagger.io/) - Simplify API development for users, teams, and enterprises with the open source, professional Swagger toolset.
