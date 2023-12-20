@@ -41,7 +41,7 @@ docker run -i -p 8080:8080 --name quarkus-social-container quarkus-social:1.1
 docker stop quarkus-social-container
 ```
 
-## How to stop the application?
+## How to start the application?
 ```
 docker start quarkus-social-container
 ```
