@@ -12,6 +12,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class FollowerRequestDTO {
 
-    @NotNull(message = "{null.field}")
     private Long idFollower;
 }
