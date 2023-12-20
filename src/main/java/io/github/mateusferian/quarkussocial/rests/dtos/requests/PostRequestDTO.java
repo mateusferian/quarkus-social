@@ -6,8 +6,6 @@ import lombok.Data;
 @Data
 public class PostRequestDTO {
 
-    @NotBlank(message = "{white.field}")
-    @Size(min = 3,max = 150, message = "{size.invalid}")
     private String text;
 
 }
