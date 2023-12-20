@@ -33,7 +33,7 @@ java -jar ./target/quarkus-app/quarkus-run.jar
 
 To run the application with Docker, run the following command in the terminal:
 ```
-docker run -i -p 8080:8080 --name quarkus-social-container quarkus-social:1.1
+ docker build -f src/main/docker/Dockerfile.jvm -t quarkus-social:1.1 . && docker run -i  -p 8080:8080 --name quarkus-social-container quarkus-social:1.1
 ```
 
 ## How to stop the application?
