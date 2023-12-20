@@ -10,6 +10,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.core.Response;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,6 +33,10 @@ class FollowerResourceTest {
     public static Long USER_ID_NONEXISTENT = 999L;
 
     public static Long USER_ID_FOLLOWER;
+
+    public static String NAME_USER_ID_FOLLOWER_PARAMETER = "followerId";
+
+    public static String NAME_USER_ID_PARAMETER = "userId";
 
     @BeforeEach
     @Transactional
@@ -64,11 +69,11 @@ class FollowerResourceTest {
         given()
                 .contentType(ContentType.JSON)
                 .body(followerRequest)
-                .pathParams("userid",USER_ID)
+                .pathParams(NAME_USER_ID_PARAMETER,USER_ID)
                 .when()
                 .put()
                 .then()
-                .statusCode(409)
+                .statusCode(Response.Status.CONFLICT.getStatusCode())
                 .body(Matchers.is("You can't follower yourself"));
     }
 
@@ -82,11 +87,11 @@ class FollowerResourceTest {
         given()
                 .contentType(ContentType.JSON)
                 .body(followerRequest)
-                .pathParams("userid",USER_ID_NONEXISTENT)
+                .pathParams(NAME_USER_ID_PARAMETER,USER_ID_NONEXISTENT)
                 .when()
                 .put()
                 .then()
-                .statusCode(404);
+                .statusCode(Response.Status.NOT_FOUND.getStatusCode());
     }
 
     @Test
@@ -99,11 +104,11 @@ class FollowerResourceTest {
         given()
                 .contentType(ContentType.JSON)
                 .body(followerRequest)
-                .pathParams("userid",USER_ID)
+                .pathParams(NAME_USER_ID_PARAMETER,USER_ID)
                 .when()
                 .put()
                 .then()
-                .statusCode(204);
+                .statusCode(Response.Status.NO_CONTENT.getStatusCode());
     }
 
     @Test
@@ -112,11 +117,11 @@ class FollowerResourceTest {
 
         given()
                 .contentType(ContentType.JSON)
-                .pathParams("userid",USER_ID_NONEXISTENT)
+                .pathParams(NAME_USER_ID_PARAMETER,USER_ID_NONEXISTENT)
                 .when()
                 .get()
                 .then()
-                .statusCode(404);
+                .statusCode(Response.Status.NOT_FOUND.getStatusCode());
     }
 
     @Test
@@ -125,7 +130,7 @@ class FollowerResourceTest {
 
         var response = given()
                 .contentType(ContentType.JSON)
-                .pathParams("userid",USER_ID)
+                .pathParams(NAME_USER_ID_PARAMETER,USER_ID)
                 .when()
                 .get()
                 .then()
@@ -134,7 +139,7 @@ class FollowerResourceTest {
         var followersCount = response.jsonPath().get("followersCount");
         var followerListContent = response.jsonPath().getList("content");
 
-        assertEquals(200, response.statusCode());
+        assertEquals(Response.Status.OK.getStatusCode(), response.statusCode());
         assertEquals(followersCount, 1);
         assertEquals(1, followerListContent.size());
     }
@@ -144,12 +149,12 @@ class FollowerResourceTest {
     public void userNotFoundWhenUnFollowingAUserTest(){
 
         given()
-                .pathParams("userid",USER_ID_NONEXISTENT)
-                .queryParam("followerId",USER_ID_FOLLOWER)
+                .pathParams(NAME_USER_ID_PARAMETER,USER_ID_NONEXISTENT)
+                .queryParam(NAME_USER_ID_FOLLOWER_PARAMETER,USER_ID_FOLLOWER)
                 .when()
                 .delete()
                 .then()
-                .statusCode(404);
+                .statusCode(Response.Status.NOT_FOUND.getStatusCode());
     }
 
     @Test
@@ -157,11 +162,11 @@ class FollowerResourceTest {
     public void unfollowUserTest(){
 
         given()
-                .pathParams("userid",USER_ID)
-                .queryParam("followerId",USER_ID_FOLLOWER)
+                .pathParams(NAME_USER_ID_PARAMETER,USER_ID)
+                .queryParam(NAME_USER_ID_FOLLOWER_PARAMETER,USER_ID_FOLLOWER)
                 .when()
                 .delete()
                 .then()
-                .statusCode(204);
+                .statusCode(Response.Status.NO_CONTENT.getStatusCode());
     }
 }

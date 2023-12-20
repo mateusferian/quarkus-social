@@ -4,6 +4,7 @@ import io.github.mateusferian.quarkussocial.rests.dtos.errors.ResponseError;
 import io.github.mateusferian.quarkussocial.rests.dtos.requests.UserRequestDTO;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
+import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.*;
 
 import java.util.List;
@@ -36,7 +37,7 @@ class UserResourceTest {
                 .log().all()
                 .extract().response();
 
-        assertEquals(201, response.statusCode());
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.statusCode());
         assertNotNull(response.jsonPath().getString("id"));
     }
 
@@ -78,8 +79,6 @@ class UserResourceTest {
                 .when()
                 .get(URL_USERS)
                 .then()
-                .statusCode(200);
-//                .body("size()", Matchers.is(1));
-
+                .statusCode(Response.Status.OK.getStatusCode());
     }
 }

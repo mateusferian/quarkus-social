@@ -12,6 +12,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.core.Response;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,6 +32,10 @@ class PostResourceTest {
 
     @Inject
     public PostRepository postRepository;
+
+    public static String NAME_USER_ID_FOLLOWER_PARAMETER = "followerId";
+
+    public static String NAME_USER_ID_PARAMETER = "userId";
 
     public static Long USER_ID;
 
@@ -83,11 +88,11 @@ class PostResourceTest {
         given()
                 .contentType(ContentType.JSON)
                 .body(postRequest)
-                .pathParams("userid",USER_ID)
+                .pathParams(NAME_USER_ID_PARAMETER,USER_ID)
                 .when()
                 .post()
                 .then()
-                .statusCode(201);
+                .statusCode(Response.Status.CREATED.getStatusCode());
     }
 
     @Test
@@ -99,23 +104,23 @@ class PostResourceTest {
         given()
                 .contentType(ContentType.JSON)
                 .body(postRequest)
-                .pathParams("userid",USER_ID_NONEXISTENT)
+                .pathParams(NAME_USER_ID_PARAMETER,USER_ID_NONEXISTENT)
                 .when()
                 .post()
                 .then()
-                .statusCode(404);
+                .statusCode(Response.Status.NOT_FOUND.getStatusCode());
     }
 
     @Test
     @DisplayName("Should return posts")
     public void listPostsTest() {
         given()
-                .pathParams("userid",USER_ID)
-                .header("followerId",USER_ID_FOLLOWER)
+                .pathParams(NAME_USER_ID_PARAMETER,USER_ID)
+                .header(NAME_USER_ID_FOLLOWER_PARAMETER,USER_ID_FOLLOWER)
                 .when()
                 .get()
                 .then()
-                .statusCode(200)
+                .statusCode(Response.Status.OK.getStatusCode())
                 .body("size()",Matchers.is(1));
     }
 
@@ -124,22 +129,22 @@ class PostResourceTest {
     public void listPostUserNotFoundTest() {
 
         given()
-                .pathParams("userid",USER_ID_NONEXISTENT)
+                .pathParams(NAME_USER_ID_PARAMETER,USER_ID_NONEXISTENT)
                 .when()
                 .get()
                 .then()
-                .statusCode(404);
+                .statusCode(Response.Status.NOT_FOUND.getStatusCode());
     }
 
     @Test
-    @DisplayName("Should return 40 when followerId header is not present")
+    @DisplayName("Should return 400 when followerId header is not present")
     public void listPostPorFollowerHeaderNotSendTest() {
         given()
-                .pathParams("userid",USER_ID)
+                .pathParams(NAME_USER_ID_PARAMETER,USER_ID)
                 .when()
                 .get()
                 .then()
-                .statusCode(400)
+                .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
                 .body(Matchers.is("You forget the header followerId"));
     }
 
@@ -147,12 +152,12 @@ class PostResourceTest {
     @DisplayName("Should return 404 when follower doesn't exist")
     public void listPostFollowerNotFoundTest() {
         given()
-                .pathParams("userid",USER_ID)
-                .header("followerId",FOLLOWER_ID_NONEXISTENT)
+                .pathParams(NAME_USER_ID_PARAMETER,USER_ID)
+                .header(NAME_USER_ID_FOLLOWER_PARAMETER,FOLLOWER_ID_NONEXISTENT)
                 .when()
                 .get()
                 .then()
-                .statusCode(400)
+                .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
                 .body(Matchers.is("there is no follower with this id"));
     }
 
@@ -160,12 +165,12 @@ class PostResourceTest {
     @DisplayName("Should return 404 when follower isn't follower")
     public void listPostNotFollowerTest() {
         given()
-                .pathParams("userid",USER_ID)
-                .header("followerId",USER_ID_NOT_FOLLOWER)
+                .pathParams(NAME_USER_ID_PARAMETER,USER_ID)
+                .header(NAME_USER_ID_FOLLOWER_PARAMETER,USER_ID_NOT_FOLLOWER)
                 .when()
                 .get()
                 .then()
-                .statusCode(403)
+                .statusCode(Response.Status.FORBIDDEN.getStatusCode())
                 .body(Matchers.is("You can't see these posts"));
     }
 }
