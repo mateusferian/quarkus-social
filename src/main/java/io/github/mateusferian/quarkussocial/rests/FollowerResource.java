@@ -3,8 +3,8 @@ package io.github.mateusferian.quarkussocial.rests;
 import io.github.mateusferian.quarkussocial.domains.models.FollowerModel;
 import io.github.mateusferian.quarkussocial.domains.repositories.FollowerRepository;
 import io.github.mateusferian.quarkussocial.domains.repositories.UserRepository;
-import io.github.mateusferian.quarkussocial.rests.dtos.responses.FollowerPerUserResponseDTO;
 import io.github.mateusferian.quarkussocial.rests.dtos.requests.FollowerRequestDTO;
+import io.github.mateusferian.quarkussocial.rests.dtos.responses.FollowerPerUserResponseDTO;
 import io.github.mateusferian.quarkussocial.rests.dtos.responses.FollowerResponseDTO;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -14,7 +14,7 @@ import jakarta.ws.rs.core.Response;
 
 import java.util.stream.Collectors;
 
-@Path("/users/{userid}/followers")
+@Path("/users/{userId}/followers")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class FollowerResource {
@@ -33,7 +33,7 @@ public class FollowerResource {
     @PUT
     @Transactional
     public Response followerUser(
-            @PathParam("userid") Long userId, FollowerRequestDTO request){
+            @PathParam("userId") Long userId, FollowerRequestDTO request){
 
         if(userId.equals(request.getIdFollower())){
             return  Response.status(Response.Status.CONFLICT)
@@ -62,12 +62,14 @@ public class FollowerResource {
     }
 
     @GET
-    public Response listFollowers(@PathParam("userid") Long userId){
+    public Response listFollowers(@PathParam("userId") Long userId){
 
         var user = userRepository.findById(userId);
+
         if(user ==  null){
             return Response.status(Response.Status.NOT_FOUND).build();
         }
+
         var list = followerRepository.findByUser(userId);
 
         FollowerPerUserResponseDTO responseObject = new FollowerPerUserResponseDTO();
@@ -85,7 +87,7 @@ public class FollowerResource {
     @DELETE
     @Transactional
     public Response unFollowUser(
-            @PathParam("userid") Long userId,
+            @PathParam("userId") Long userId,
             @QueryParam("followerId") Long followerId){
         var user = userRepository.findById(userId);
         if(user ==  null){

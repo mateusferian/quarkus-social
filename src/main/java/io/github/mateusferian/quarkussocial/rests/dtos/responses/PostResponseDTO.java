@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 public class PostResponseDTO {
 
     private String text;
+
     private LocalDateTime dateTime;
 
     public static PostResponseDTO fromEntity(PostModel post){
