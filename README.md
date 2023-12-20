@@ -60,6 +60,13 @@ Open your browser and go to the following link:
 http://localhost:8080/q/swagger-ui/
 ```
 
+### to access API documentation
+how to build and package a Quarkus project, removing old artifacts, generating a package (as JAR) and skipping running the tests?
+
+```
+./mvnw clean package -DskipTests
+```
+
 ### technologies used
 
 * [Maven](https://gradle.org/) - Maven is a powerful build automation tool that streamlines dependency management and the compilation process in 
