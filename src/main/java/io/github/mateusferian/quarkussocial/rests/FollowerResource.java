@@ -1,11 +1,11 @@
-package io.github.mateusferian.quarkussocial.rest;
+package io.github.mateusferian.quarkussocial.rests;
 
-import io.github.mateusferian.quarkussocial.domain.model.Follower;
-import io.github.mateusferian.quarkussocial.domain.repository.FollowerRepository;
-import io.github.mateusferian.quarkussocial.domain.repository.UserRepository;
-import io.github.mateusferian.quarkussocial.rest.dto.FollowerPerUserResponse;
-import io.github.mateusferian.quarkussocial.rest.dto.FollowerRequest;
-import io.github.mateusferian.quarkussocial.rest.dto.FollowerResponse;
+import io.github.mateusferian.quarkussocial.domains.models.FollowerModel;
+import io.github.mateusferian.quarkussocial.domains.repositories.FollowerRepository;
+import io.github.mateusferian.quarkussocial.domains.repositories.UserRepository;
+import io.github.mateusferian.quarkussocial.rests.dtos.requests.FollowerRequestDTO;
+import io.github.mateusferian.quarkussocial.rests.dtos.responses.FollowerPerUserResponseDTO;
+import io.github.mateusferian.quarkussocial.rests.dtos.responses.FollowerResponseDTO;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
@@ -14,7 +14,7 @@ import jakarta.ws.rs.core.Response;
 
 import java.util.stream.Collectors;
 
-@Path("/users/{userid}/followers")
+@Path("/users/{userId}/followers")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class FollowerResource {
@@ -33,7 +33,7 @@ public class FollowerResource {
     @PUT
     @Transactional
     public Response followerUser(
-            @PathParam("userid") Long userId, FollowerRequest request){
+            @PathParam("userId") Long userId, FollowerRequestDTO request){
 
         if(userId.equals(request.getIdFollower())){
             return  Response.status(Response.Status.CONFLICT)
@@ -51,7 +51,7 @@ public class FollowerResource {
         boolean followers = followerRepository.followers(follower, user);
 
         if(!followers){
-            var entity = new Follower();
+            var entity = new FollowerModel();
             entity.setFollower(follower);
             entity.setUser(user);
 
@@ -62,20 +62,22 @@ public class FollowerResource {
     }
 
     @GET
-    public Response listFollowers(@PathParam("userid") Long userId){
+    public Response findAll(@PathParam("userId") Long userId){
 
         var user = userRepository.findById(userId);
+
         if(user ==  null){
             return Response.status(Response.Status.NOT_FOUND).build();
         }
+
         var list = followerRepository.findByUser(userId);
 
-        FollowerPerUserResponse responseObject = new FollowerPerUserResponse();
+        FollowerPerUserResponseDTO responseObject = new FollowerPerUserResponseDTO();
 
         responseObject.setFollowersCount(list.size());
 
         var followersList =
-                list.stream().map(FollowerResponse::new).collect(Collectors.toList());
+                list.stream().map(FollowerResponseDTO::new).collect(Collectors.toList());
 
         responseObject.setContent(followersList);
 
@@ -84,8 +86,8 @@ public class FollowerResource {
 
     @DELETE
     @Transactional
-    public Response unFollowUser(
-            @PathParam("userid") Long userId,
+    public Response delete(
+            @PathParam("userId") Long userId,
             @QueryParam("followerId") Long followerId){
         var user = userRepository.findById(userId);
         if(user ==  null){

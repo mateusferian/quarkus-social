@@ -1,4 +1,4 @@
-package io.github.mateusferian.quarkussocial.rest.dto;
+package io.github.mateusferian.quarkussocial.rests.dtos.requests;
 
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserRequest  {
+public class UserRequestDTO {
 
     @NotBlank(message = "{white.field}")
     @Size(min = 3,max = 50, message = "{size.invalid}")

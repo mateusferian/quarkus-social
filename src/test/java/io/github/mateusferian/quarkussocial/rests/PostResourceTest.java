@@ -1,17 +1,18 @@
-package io.github.mateusferian.quarkussocial.rest;
+package io.github.mateusferian.quarkussocial.rests;
 
-import io.github.mateusferian.quarkussocial.domain.model.Follower;
-import io.github.mateusferian.quarkussocial.domain.model.Post;
-import io.github.mateusferian.quarkussocial.domain.model.User;
-import io.github.mateusferian.quarkussocial.domain.repository.FollowerRepository;
-import io.github.mateusferian.quarkussocial.domain.repository.PostRepository;
-import io.github.mateusferian.quarkussocial.domain.repository.UserRepository;
-import io.github.mateusferian.quarkussocial.rest.dto.PostRequest;
+import io.github.mateusferian.quarkussocial.domains.models.FollowerModel;
+import io.github.mateusferian.quarkussocial.domains.models.PostModel;
+import io.github.mateusferian.quarkussocial.domains.models.UserModel;
+import io.github.mateusferian.quarkussocial.domains.repositories.FollowerRepository;
+import io.github.mateusferian.quarkussocial.domains.repositories.PostRepository;
+import io.github.mateusferian.quarkussocial.domains.repositories.UserRepository;
+import io.github.mateusferian.quarkussocial.rests.dtos.requests.PostRequestDTO;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.core.Response;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,6 +33,10 @@ class PostResourceTest {
     @Inject
     public PostRepository postRepository;
 
+    public static String NAME_USER_ID_FOLLOWER_PARAMETER = "followerId";
+
+    public static String NAME_USER_ID_PARAMETER = "userId";
+
     public static Long USER_ID;
 
     public static Long USER_ID_NONEXISTENT = 999L;
@@ -45,30 +50,31 @@ class PostResourceTest {
     @BeforeEach
     @Transactional
     public void setUP(){
-        User user = new User();
+
+        UserModel user = new UserModel();
         user.setName("testAPI");
         user.setAge(19);
         userRepository.persist(user);
         USER_ID = user.getId();
 
-        User userNotFollower = new User();
+        UserModel userNotFollower = new UserModel();
         userNotFollower.setName("testFollowerNot");
         userNotFollower.setAge(19);
         userRepository.persist(userNotFollower);
         USER_ID_NOT_FOLLOWER = userNotFollower.getId();
 
-        User userFollower = new User();
+        UserModel userFollower = new UserModel();
         userFollower.setName("testFollower");
         userFollower.setAge(19);
         userRepository.persist(userFollower);
         USER_ID_FOLLOWER = userFollower.getId();
 
-        Follower follower = new Follower();
+        FollowerModel follower = new FollowerModel();
         follower.setUser(user);
         follower.setFollower(userFollower);
         followerRepository.persist(follower);
 
-        Post post = new Post();
+        PostModel post = new PostModel();
         post.setText("hello");
         post.setUser(user);
         postRepository.persist(post);
@@ -77,45 +83,45 @@ class PostResourceTest {
     @Test
     @DisplayName("Should create a post successfully")
     public void savePostTest() {
-        PostRequest postRequest = new PostRequest();
+        PostRequestDTO postRequest = new PostRequestDTO();
         postRequest.setText("Some text");
 
         given()
                 .contentType(ContentType.JSON)
                 .body(postRequest)
-                .pathParams("userid",USER_ID)
+                .pathParams(NAME_USER_ID_PARAMETER,USER_ID)
                 .when()
                 .post()
                 .then()
-                .statusCode(201);
+                .statusCode(Response.Status.CREATED.getStatusCode());
     }
 
     @Test
     @DisplayName("Should return 404 when trying to make a post for an nonexistent user")
     public void postPostUserNotFoundTest() {
-        PostRequest postRequest = new PostRequest();
+        PostRequestDTO postRequest = new PostRequestDTO();
         postRequest.setText("Some text");
 
         given()
                 .contentType(ContentType.JSON)
                 .body(postRequest)
-                .pathParams("userid",USER_ID_NONEXISTENT)
+                .pathParams(NAME_USER_ID_PARAMETER,USER_ID_NONEXISTENT)
                 .when()
                 .post()
                 .then()
-                .statusCode(404);
+                .statusCode(Response.Status.NOT_FOUND.getStatusCode());
     }
 
     @Test
     @DisplayName("Should return posts")
     public void listPostsTest() {
         given()
-                .pathParams("userid",USER_ID)
-                .header("followerId",USER_ID_FOLLOWER)
+                .pathParams(NAME_USER_ID_PARAMETER,USER_ID)
+                .header(NAME_USER_ID_FOLLOWER_PARAMETER,USER_ID_FOLLOWER)
                 .when()
                 .get()
                 .then()
-                .statusCode(200)
+                .statusCode(Response.Status.OK.getStatusCode())
                 .body("size()",Matchers.is(1));
     }
 
@@ -124,22 +130,22 @@ class PostResourceTest {
     public void listPostUserNotFoundTest() {
 
         given()
-                .pathParams("userid",USER_ID_NONEXISTENT)
+                .pathParams(NAME_USER_ID_PARAMETER,USER_ID_NONEXISTENT)
                 .when()
                 .get()
                 .then()
-                .statusCode(404);
+                .statusCode(Response.Status.NOT_FOUND.getStatusCode());
     }
 
     @Test
-    @DisplayName("Should return 40 when followerId header is not present")
+    @DisplayName("Should return 400 when followerId header is not present")
     public void listPostPorFollowerHeaderNotSendTest() {
         given()
-                .pathParams("userid",USER_ID)
+                .pathParams(NAME_USER_ID_PARAMETER,USER_ID)
                 .when()
                 .get()
                 .then()
-                .statusCode(400)
+                .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
                 .body(Matchers.is("You forget the header followerId"));
     }
 
@@ -147,12 +153,12 @@ class PostResourceTest {
     @DisplayName("Should return 404 when follower doesn't exist")
     public void listPostFollowerNotFoundTest() {
         given()
-                .pathParams("userid",USER_ID)
-                .header("followerId",FOLLOWER_ID_NONEXISTENT)
+                .pathParams(NAME_USER_ID_PARAMETER,USER_ID)
+                .header(NAME_USER_ID_FOLLOWER_PARAMETER,FOLLOWER_ID_NONEXISTENT)
                 .when()
                 .get()
                 .then()
-                .statusCode(400)
+                .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
                 .body(Matchers.is("there is no follower with this id"));
     }
 
@@ -160,12 +166,12 @@ class PostResourceTest {
     @DisplayName("Should return 404 when follower isn't follower")
     public void listPostNotFollowerTest() {
         given()
-                .pathParams("userid",USER_ID)
-                .header("followerId",USER_ID_NOT_FOLLOWER)
+                .pathParams(NAME_USER_ID_PARAMETER,USER_ID)
+                .header(NAME_USER_ID_FOLLOWER_PARAMETER,USER_ID_NOT_FOLLOWER)
                 .when()
                 .get()
                 .then()
-                .statusCode(403)
+                .statusCode(Response.Status.FORBIDDEN.getStatusCode())
                 .body(Matchers.is("You can't see these posts"));
     }
 }
