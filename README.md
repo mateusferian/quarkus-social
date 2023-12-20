@@ -60,8 +60,8 @@ Open your browser and go to the following link:
 http://localhost:8080/q/swagger-ui/
 ```
 
-### to access API documentation
-how to build and package a Quarkus project, removing old artifacts, generating a package (as JAR) and skipping running the tests?
+### how to build and package a Quarkus project, cleaning up old artifacts, generating a package (as JAR) and skips running tests?
+open the terminal and run the command below:
 
 ```
 ./mvnw clean package -DskipTests
